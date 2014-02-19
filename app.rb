@@ -3,8 +3,6 @@ require 'json'
 require 'redis'
 require 'leaderboard'
 
-redis = Redis.new
-
 highscore_lb = Leaderboard.new('highscores')
 highscore_lb.page_size = 10
 
@@ -14,11 +12,11 @@ get '/leaders' do
     highscore_lb.leaders(1).to_json
   rescue
     status 500
-  end 
+  end
 end
 
 get '/aroundme' do
-  if params[:nickname] and not params[:nickname].empty?
+  if params[:nickname] && !params[:nickname].empty?
     begin
       content_type :json
       nickname = params[:nickname].strip
@@ -29,20 +27,21 @@ get '/aroundme' do
   end
 end
 
-post '/add' do  
-  if params[:nickname] and not params[:nickname].empty?
-    if params[:score] and not params[:score].empty?
+post '/add' do
+  if params[:nickname] && !params[:nickname].empty?
+    if params[:score] && !params[:score].empty?
       begin
         nickname = params[:nickname].strip
-        score = params[:score].to_i
-        
-        highscore_check = lambda do |member, current_score, score, member_data, leaderboard_options|
+        highscore = params[:score].to_i
+
+        highscore_check = lambda do |member, current_score, score, member_data,
+                                     leaderboard_options|
           return true if current_score.nil?
-          return true if score > current_score
+          return true if highscore > current_score
           false
         end
 
-        highscore_lb.rank_member_if(highscore_check, nickname, score)
+        highscore_lb.rank_member_if(highscore_check, nickname, highscore)
         status 200
       rescue
         status 500
@@ -51,6 +50,6 @@ post '/add' do
   end
 end
 
-not_found do  
-  halt 404, 'page not found'  
+not_found do
+  halt 404, 'page not found'
 end
