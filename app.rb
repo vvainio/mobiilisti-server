@@ -8,6 +8,9 @@ class App < Sinatra::Base
   highscore_lb = Leaderboard.new('highscores')
   highscore_lb.page_size = 10
 
+  get '/' do
+  end
+  
   get '/leaders' do
     begin
       content_type :json
