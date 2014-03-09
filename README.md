@@ -1,2 +1,0 @@
-mobiilisti-server
-=================
